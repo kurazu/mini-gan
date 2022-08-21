@@ -1,0 +1,13 @@
+numpy
+tensorflow
+pillow
+click
+returns
+matplotlib
+tqdm
+
+black
+mypy
+isort
+ipdb
+ipython
