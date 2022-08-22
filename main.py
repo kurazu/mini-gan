@@ -13,10 +13,11 @@ from model import make_discriminator_model, make_generator_model
 
 def process_path(file_path: tf.Tensor, img_size: int) -> tf.Tensor:
     file_contents = tf.io.read_file(file_path)
-    img = tf.io.decode_png(file_contents, channels=3)
-    grayscale_img = tf.image.rgb_to_grayscale(img)
-    resized_image = tf.image.resize(grayscale_img, [img_size, img_size])
-    normalized_image = (resized_image - 127.5) / 127.5
+    img = tf.io.decode_png(file_contents, channels=1)
+    # grayscale_img = tf.image.rgb_to_grayscale(img)
+    # resized_image = tf.image.resize(grayscale_img, [img_size, img_size])
+    # normalized_image = (resized_image - 127.5) / 127.5
+    normalized_image = (tf.cast(img, tf.float32) - 127.5) / 127.5
     return normalized_image
 
 
@@ -40,7 +41,7 @@ def generate_and_save_images(
 @click.command()
 @click.option(
     "--input-dir",
-    default="images",
+    default="resized",
     type=click.Path(
         exists=True,
         dir_okay=True,
@@ -118,6 +119,11 @@ def main(
         discriminator=discriminator,
     )
 
+    latest_checkpoint_dir = tf.train.latest_checkpoint(output_dir)
+    _, epoch_str = latest_checkpoint_dir.rsplit("-", 1)
+    start_epoch = int(epoch_str)
+    checkpoint.restore(latest_checkpoint_dir)
+
     num_examples_to_generate = 16
     seed = tf.random.normal([num_examples_to_generate, noise_dim])
 
@@ -154,9 +160,9 @@ def main(
             )
 
     def train(dataset, epochs):
-        generate_and_save_images(output_dir, generator, 0, seed)
+        generate_and_save_images(output_dir, generator, start_epoch, seed)
 
-        for epoch in range(epochs):
+        for epoch in range(start_epoch, epochs + start_epoch):
             for image_batch in tqdm(
                 dataset,
                 total=math.ceil(cardinality / batch_size),
