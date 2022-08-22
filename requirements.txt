@@ -5,6 +5,7 @@ click
 returns
 matplotlib
 tqdm
+more_itertools
 
 black
 mypy
