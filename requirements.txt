@@ -6,6 +6,8 @@ returns
 matplotlib
 tqdm
 more_itertools
+jupyter
+notebook
 
 black
 mypy
