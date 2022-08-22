@@ -104,13 +104,16 @@ def main(
         tf.data.experimental.AUTOTUNE
     )
 
-    generator = make_generator_model(img_size=img_size, noise_dim=noise_dim)
-    discriminator = make_discriminator_model(img_size=img_size)
+    with tf.distribute.MirroredStrategy().scope():
+        generator = make_generator_model(
+            img_size=img_size, noise_dim=noise_dim
+        )
+        discriminator = make_discriminator_model(img_size=img_size)
 
-    cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+        cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
-    generator_optimizer = tf.keras.optimizers.Adam(1e-4)
-    discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
+        generator_optimizer = tf.keras.optimizers.Adam(1e-4)
+        discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
 
     checkpoint = tf.train.Checkpoint(
         generator_optimizer=generator_optimizer,

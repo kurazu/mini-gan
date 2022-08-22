@@ -15,8 +15,7 @@ def convert_image(file_path: Path, output_dir: Path, img_size: int) -> None:
     image = image.resize((img_size, img_size))
     # save image
     directory = output_dir / file_path.parent.name
-    if not directory.exists():
-        directory.mkdir()
+    directory.mkdir(exist_ok=True)
     image.save(directory / file_path.name, optimize=True)
 
 
