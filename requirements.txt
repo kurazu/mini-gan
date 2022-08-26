@@ -8,7 +8,7 @@ tqdm
 more_itertools
 jupyter
 notebook
-
+ipywidgets>=7.0,<8.0
 black
 mypy
 isort
